@@ -1,6 +1,5 @@
 import yfinance as yf
 import pandas as pd
+from indicators import bollinger_bands
 
-dat = yf.Ticker("MSFT")
-
-print(dat.history(period="3mo"))
+# Collect the S&P 500 stocks
