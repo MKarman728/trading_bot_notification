@@ -4,7 +4,8 @@ from indicators import bollinger_bands
 from dotenv import load_dotenv
 from twilio.rest import Client
 import os
-
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 load_dotenv()
 
@@ -12,11 +13,30 @@ load_dotenv()
 def send_SMS(msg_text):
     account_sid = os.environ["ACCOUNT_SID"]
     auth_token = os.environ["AUTH_TOKEN"]
+    msg_sid = os.environ["MESSAGE_SERVICE_SID"]
     client = Client(account_sid, auth_token)
     message = client.messages.create(
-        from_="+19494315225", body=msg_text, to="+16614443787"
+        messaging_service_sid=msg_sid, body=msg_text, to="+16614443787"
     )
     return message
+
+
+def send_email(msg_text):
+    message = Mail(
+        from_email="mkarman08@gmail.com",
+        to_emails="mkarman08@gmail.com",
+        subject="Stock Market Tickers",
+        html_content=f"<p>{msg_text}</p>",
+    )
+    try:
+        sg = SendGridAPIClient(os.environ.get("EMAIL_API"))
+        response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+    except Exception as e:
+        print(str(e))
+        return msg_text
 
 
 # Collects all of the S&P 500 stocks and determines what's a good buy and sell
@@ -37,9 +57,16 @@ def main():
             print(f"Error on {stock['Symbol']}:{e}")
             signal = "Error"
         stocks.loc[index, "Bollinger"] = signal
-    buy_sell_signals = stocks[(stocks["Bollinger"] == "Buy")]
-    buy_sell_string = buy_sell_signals.to_string(index=False)
-    send_SMS(buy_sell_string)
+    buy_sell_signals = stocks[
+        (stocks["Bollinger"] == "Buy") | (stocks["Bollinger"] == "Sell")
+    ]
+    buy_sell_string = "<br><br>".join(
+        buy_sell_signals.apply(
+            lambda row: f"Symbol: {row['Symbol']} Security: {row['Security']} Signal: {row['Bollinger']}",
+            axis=1,
+        )
+    )
+    send_email(buy_sell_string)
     return buy_sell_signals
 
 
