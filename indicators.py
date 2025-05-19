@@ -18,7 +18,7 @@ def bollinger_bands(df: pd.DataFrame, plot=False, window=20):
     elif stock["Close"].iloc[-1] > stock["upper_band"].iloc[-1]:
         return "Sell"
     else:
-        return np.nan
+        return "No Signal"
 
 
 def gen_plot(df: pd.DataFrame):
@@ -34,6 +34,6 @@ def gen_plot(df: pd.DataFrame):
     plt.show()
 
 
-data = yf.Ticker("MSFT")
-df = data.history(period="3mo")
-print(bollinger_bands(df, plot=True))
+if __name__ == "__main__":
+    data = yf.Ticker("MSFT").history(period="3mo")
+    print(bollinger_bands(data, plot=True))
