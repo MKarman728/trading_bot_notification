@@ -24,7 +24,7 @@ def send_SMS(msg_text):
 def send_email(msg_text):
     message = Mail(
         from_email="mkarman08@gmail.com",
-        to_emails="mkarman08@gmail.com",
+        to_emails=["mkarman08@gmail.com", "mduong513@gmail.com"],
         subject="Stock Market Tickers",
         html_content=f"<p>{msg_text}</p>",
     )
