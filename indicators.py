@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import yfinance as yf
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 
 def bollinger_bands(df: pd.DataFrame, plot=False, window=20):
@@ -21,6 +23,16 @@ def bollinger_bands(df: pd.DataFrame, plot=False, window=20):
         return "No Signal"
 
 
+def momentum(df: pd.DataFrame, plot=False, window=90):
+    stocks = pd.DataFrame()
+    stocks["Volume"] = df["Volume"]
+    stocks["Average"] = df["Volume"].rolling(window).mean()
+    stocks["Atypical"] = np.where(
+        stocks["Volume"] > stocks["Average"], "Unusual", "Normal"
+    )
+    print(stocks.tail(90))
+
+
 def gen_plot(df: pd.DataFrame):
     plt.figure(figsize=(12, 6))
     plt.plot(df["Close"], label="Close Price")
@@ -35,5 +47,6 @@ def gen_plot(df: pd.DataFrame):
 
 
 if __name__ == "__main__":
-    data = yf.Ticker("MSFT").history(period="3mo")
-    print(bollinger_bands(data, plot=True))
+    data = yf.Ticker("MSFT").history(period="9mo")
+    print(momentum(data, plot=True))
+    # print(bollinger_bands(data, plot=True))
