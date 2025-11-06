@@ -1,3 +1,5 @@
+from io import StringIO
+import requests
 import yfinance as yf
 import pandas as pd
 from indicators import bollinger_bands
@@ -42,7 +44,8 @@ def send_email(msg_text):
 # Collects all of the S&P 500 stocks and determines what's a good buy and sell
 def main():
     url = "http://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
-    tables = pd.read_html(url)
+    html = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}).text
+    tables = pd.read_html(StringIO(html))
     df = tables[0]
     stocks = df[["Symbol", "Security"]].copy()
     stocks["Bollinger"] = "None"
@@ -66,10 +69,11 @@ def main():
             axis=1,
         )
     )
-    send_email(buy_sell_string)
+    # send_email(buy_sell_string)
     return buy_sell_signals
 
 
 if __name__ == "__main__":
+    pd.set_option("display.max_rows", None)
     stocks = main()
     print(stocks)
