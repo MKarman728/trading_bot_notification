@@ -45,7 +45,7 @@ def send_email(msg_text):
 def main():
     url = "http://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
     html = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}).text
-    tables = pd.read_html(StringIO(html))
+    tables = pd.read_html(StringIO(html), attrs={"id": "constituents"})
     df = tables[0]
     stocks = df[["Symbol", "Security"]].copy()
     stocks["Bollinger"] = "None"
