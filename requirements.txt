@@ -1,51 +1,37 @@
-anaconda-anon-usage @ file:///croot/anaconda-anon-usage_1732732445543/work
-archspec @ file:///croot/archspec_1709217642129/work
-beautifulsoup4==4.13.4
-boltons @ file:///work/perseverance-python-buildout/croot/boltons_1698851177130/work
-Brotli @ file:///croot/brotli-split_1714483155106/work
-certifi @ file:///home/conda/feedstock_root/build_artifacts/certifi_1746569525376/work/certifi
-cffi @ file:///croot/cffi_1726856441404/work
-charset-normalizer @ file:///croot/charset-normalizer_1721748349566/work
-conda @ file:///home/conda/feedstock_root/build_artifacts/conda_1736947900115/work
-conda-anaconda-telemetry @ file:///croot/conda-anaconda-telemetry_1733258728466/work
-conda-content-trust @ file:///croot/conda-content-trust_1714483159009/work
-conda-libmamba-solver @ file:///croot/conda-libmamba-solver_1727775630457/work/src
-conda-package-handling @ file:///croot/conda-package-handling_1731369017509/work
-conda_package_streaming @ file:///croot/conda-package-streaming_1731366181659/work
-cryptography @ file:///croot/cryptography_1732129644106/work
-curl_cffi==0.12.0
-distro @ file:///croot/distro_1714488253808/work
-frozendict @ file:///croot/frozendict_1713194832637/work
-idna @ file:///croot/idna_1714398848350/work
-jsonpatch @ file:///croot/jsonpatch_1714483231291/work
-jsonpointer==2.1
-libmambapy @ file:///croot/mamba-split_1732896306512/work/libmambapy
-menuinst @ file:///croot/menuinst_1731364904452/work
+beautifulsoup4==4.14.3
+certifi==2025.11.12
+cffi==2.0.0
+charset-normalizer==3.4.4
+contourpy==1.3.3
+curl_cffi==0.13.0
+cycler==0.12.1
+dotenv==0.9.9
+fonttools==4.61.1
+frozendict==2.4.7
+html5lib==1.1
+idna==3.11
+kiwisolver==1.4.9
+lxml==6.0.2
+matplotlib==3.10.8
 multitasking==0.0.12
-numpy @ file:///home/conda/feedstock_root/build_artifacts/numpy_1747544634713/work/dist/numpy-2.2.6-cp312-cp312-linux_x86_64.whl#sha256=c3905be56f0422fc76a7847e19cecc5bd3daf2dd53b346a3db57c290db478e50
-packaging @ file:///croot/packaging_1720101850331/work
-pandas @ file:///home/conda/feedstock_root/build_artifacts/pandas_1744430457695/work
-peewee==3.18.2
-platformdirs @ file:///work/perseverance-python-buildout/croot/platformdirs_1701732573265/work
-pluggy @ file:///croot/pluggy_1733169602837/work
-protobuf==6.31.1
-pycosat @ file:///croot/pycosat_1714510623388/work
-pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
-PySocks @ file:///work/perseverance-python-buildout/croot/pysocks_1698845478203/work
-python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/python-dateutil_1733215673016/work
-pytz @ file:///home/conda/feedstock_root/build_artifacts/pytz_1742920838005/work
-requests @ file:///croot/requests_1730999120400/work
-ruamel.yaml @ file:///croot/ruamel.yaml_1727980156079/work
-ruamel.yaml.clib @ file:///croot/ruamel.yaml.clib_1727769819935/work
-setuptools==75.1.0
-six @ file:///home/conda/feedstock_root/build_artifacts/six_1733380938961/work
-soupsieve==2.7
-tqdm @ file:///croot/tqdm_1724853939799/work
-truststore @ file:///work/perseverance-python-buildout/croot/truststore_1701735771625/work
-typing_extensions==4.14.1
-tzdata @ file:///home/conda/feedstock_root/build_artifacts/python-tzdata_1742745135198/work
-urllib3 @ file:///croot/urllib3_1727769808118/work
+numpy==2.4.0
+packaging==25.0
+pandas==2.3.3
+peewee==3.18.3
+pillow==12.0.0
+platformdirs==4.5.1
+protobuf==6.33.2
+pycparser==2.23
+pyparsing==3.3.1
+python-dateutil==2.9.0.post0
+python-dotenv==1.2.1
+pytz==2025.2
+requests==2.32.5
+six==1.17.0
+soupsieve==2.8.1
+typing_extensions==4.15.0
+tzdata==2025.3
+urllib3==2.6.2
+webencodings==0.5.1
 websockets==15.0.1
-wheel==0.44.0
-yfinance==0.2.65
-zstandard @ file:///croot/zstandard_1731356346222/work
+yfinance==1.0

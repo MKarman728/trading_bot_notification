@@ -2,9 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import yfinance as yf
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
-
 
 def bollinger_bands(df: pd.DataFrame, plot=False, window=20):
     stock = pd.DataFrame()

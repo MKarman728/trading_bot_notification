@@ -4,10 +4,7 @@ import yfinance as yf
 import pandas as pd
 from indicators import bollinger_bands
 from dotenv import load_dotenv
-from twilio.rest import Client
 import os
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
 
 load_dotenv()
 
