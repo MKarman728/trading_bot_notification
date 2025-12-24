@@ -18,33 +18,58 @@ database_connect = sqlite3.connect("trades.db")
 
 load_dotenv()
 
-# def send_SMS(msg_text):
-#     account_sid = os.environ["ACCOUNT_SID"]
-#     auth_token = os.environ["AUTH_TOKEN"]
-#     msg_sid = os.environ["MESSAGE_SERVICE_SID"]
-#     client = Client(account_sid, auth_token)
-#     message = client.messages.create(
-#         messaging_service_sid=msg_sid, body=msg_text, to="+16614443787"
-#     )
-#     return message
-#
-#
-# def send_email(msg_text):
-#     message = Mail(
-#         from_email="mkarman08@gmail.com",
-#         to_emails=["mkarman08@gmail.com", "mduong513@gmail.com"],
-#         subject="Stock Market Tickers",
-#         html_content=f"<p>{msg_text}</p>",
-#     )
-#     try:
-#         sg = SendGridAPIClient(os.environ.get("EMAIL_API"))
-#         response = sg.send(message)
-#         print(response.status_code)
-#         print(response.body)
-#         print(response.headers)
-#     except Exception as e:
-#         print(str(e))
-#         return msg_text
+
+class TradingDatabase:
+    def __init__(self, db_path="trades.db"):
+        self.db_path = db_path
+        self.init_database()
+
+    def init_database(self):
+        """Initializes database for trading signals if not already initialized"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        # Create Tables with cursor
+        cursor.execute("""
+                       CREATE TABLE IF NOT EXISTS signals (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        symbol VARCHAR(10) NOT NULL,
+                        security VARCHAR(255),
+                        signal VARCHAR(20) NOT NULL,
+                        signal_date DATETIME,
+                        strategy VARCHAR(50) DEFAULT 'Bollinger'
+                       )
+                       """)
+        conn.commit()
+        conn.close()
+
+    def save_signals(self, signals_df):
+        """Saves signals to trading database"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+                       SELECT symbol, date(signal_date) as signal_date
+                       FROM signals
+                       """)
+        existing = set((row[0], row[1]) for row in cursor.fetchall())
+        new_signals = []
+        for _, row in signals_df.iterrows():
+            signal_date = pd.to_datetime(row["signal_date"]).strftime("%Y-%m-%d")
+            if (row["symbol"], signal_date) not in existing:
+                new_signals.append(row)
+
+        # Bulk insert all new signals into database
+        if new_signals:
+            new_df = pd.DataFrame(new_signals)
+            new_df.to_sql("signals", conn, if_exists="append", index=False)
+            print(
+                f"Inserted {len(new_signals)} new signals, skipped {len(signals_df) - len(new_signals)} duplicates"
+            )
+        else:
+            print("No new signals to insert (all duplicates)")
+        conn.close()
 
 
 # Collects all of the S&P 500 stocks and determines what's a good buy and sell
