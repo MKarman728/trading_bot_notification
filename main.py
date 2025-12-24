@@ -5,6 +5,15 @@ import pandas as pd
 from indicators import bollinger_bands
 from dotenv import load_dotenv
 import os
+from fastapi import FastAPI
+import sqlite3
+
+
+# Sets up FastAPI end points
+app = FastAPI()
+
+# Creates database if it doesn't already exist
+database_connect = sqlite3.connect("trades.db")
 
 load_dotenv()
 
@@ -39,6 +48,7 @@ def send_email(msg_text):
 
 
 # Collects all of the S&P 500 stocks and determines what's a good buy and sell
+@app.get("/bollinger_bands")
 def main():
     url = "http://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
     html = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}).text
