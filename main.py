@@ -113,7 +113,7 @@ def main():
     stocks = df[["Symbol", "Security"]].copy()
     stocks.columns = ["symbol", "security"]
     stocks["signal_date"] = "None"
-    stocks["strategy"] = "None"
+    stocks["strategy"] = "Bollinger"
     for index, stock in stocks.iterrows():
         try:
             data = yf.Ticker(stock.loc["symbol"]).history(period="3mo")
