@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from io import StringIO
 import requests
 import yfinance as yf
@@ -37,7 +37,7 @@ class TradingDatabase:
                         symbol VARCHAR(10) NOT NULL,
                         security VARCHAR(255),
                         signal VARCHAR(20) NOT NULL,
-                        signal_date DATETIME,
+                        signal_date DATETIME DEFAULT (date('now')),
                         strategy VARCHAR(50) DEFAULT 'Bollinger'
                        )
                        """)
@@ -71,6 +71,25 @@ class TradingDatabase:
             print("No new signals to insert (all duplicates)")
         conn.close()
 
+    def day_signal(self, signal_date=None):
+        if signal_date is None:
+            signal_date = date.today().isoformat()
+        else:
+            signal_date = pd.to_datetime(signal_date).strftime("%Y-%m-%d")
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        cursor.execute("""
+                        SELECT symbol, security, signal, signal_date
+                        FROM signals
+                        WHERE signal_date = ? 
+                       """,
+                        (signal_date,)
+                       )
+        date_signal = cursor.fetchall()
+        conn.close()
+        return date_signal 
+
 
 # Collects all of the S&P 500 stocks and determines what's a good buy and sell
 @app.get("/bollinger_bands")
@@ -80,11 +99,12 @@ def main():
     tables = pd.read_html(StringIO(html), attrs={"id": "constituents"})
     df = tables[0]
     stocks = df[["Symbol", "Security"]].copy()
-    stocks["Signal_Date"] = "None"
-    stocks["Bollinger"] = "None"
+    stocks.columns = ["symbol", "security"]
+    stocks["signal_date"] = "None"
+    stocks["strategy"] = "None"
     for index, stock in stocks.iterrows():
         try:
-            data = yf.Ticker(stock.loc["Symbol"]).history(period="3mo")
+            data = yf.Ticker(stock.loc["symbol"]).history(period="3mo")
             if data.empty or "Close" not in data.columns:
                 signal = "No Data"
             else:
@@ -92,15 +112,17 @@ def main():
         except Exception as e:
             print(f"Error on {stock['Symbol']}:{e}")
             signal = "Error"
-        stocks.loc[index, "Bollinger"] = signal
-        stocks.loc[index, "Signal_Date"] = datetime.now().strftime("%Y-%m-%d")
+        stocks.loc[index, "signal"] = signal
+        stocks.loc[index, "signal_date"] = datetime.now().strftime("%Y-%m-%d")
     buy_sell_signals = stocks[
-        (stocks["Bollinger"] == "Buy") | (stocks["Bollinger"] == "Sell")
+        (stocks["signal"] == "Buy") | (stocks["signal"] == "Sell")
     ]
-    return buy_sell_signals
+    trade_db.save_signals(buy_sell_signals)
 
 
 if __name__ == "__main__":
     pd.set_option("display.max_rows", None)
+    trade_db = TradingDatabase()
     stocks = main()
-    print(stocks)
+    todays_stocks = trade_db.day_signal()
+    print(todays_stocks)
