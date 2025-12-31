@@ -94,6 +94,18 @@ class TradingDatabase:
 # Collects all of the S&P 500 stocks and determines what's a good buy and sell
 @app.get("/bollinger_bands")
 def main():
+    #Instantiate the database
+    trade_db = TradingDatabase()
+    
+    #Check if data has already been run today
+    todays_signals = trade_db.day_signal()
+    if todays_signals:
+        print(f"Found {len(todays_signals)} existing signals for today")
+        signals_df = pd.DataFrame(todays_signals, columns = ['symbol', 'security', 'signal', 'signal_date'])
+        return signals_df
+    print("No signals found for today. Running analysis")
+
+    #SP500 list
     url = "http://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
     html = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}).text
     tables = pd.read_html(StringIO(html), attrs={"id": "constituents"})
@@ -118,11 +130,10 @@ def main():
         (stocks["signal"] == "Buy") | (stocks["signal"] == "Sell")
     ]
     trade_db.save_signals(buy_sell_signals)
+    return buy_sell_signals
 
 
 if __name__ == "__main__":
     pd.set_option("display.max_rows", None)
-    trade_db = TradingDatabase()
-    stocks = main()
-    todays_stocks = trade_db.day_signal()
+    todays_stocks = main()
     print(todays_stocks)
