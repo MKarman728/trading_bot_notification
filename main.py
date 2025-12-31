@@ -38,7 +38,7 @@ class TradingDatabase:
                         security VARCHAR(255),
                         signal VARCHAR(20) NOT NULL,
                         signal_date DATETIME DEFAULT (date('now')),
-                        strategy VARCHAR(50) DEFAULT 'Bollinger'
+                        strategy VARCHAR(50)
                        )
                        """)
         conn.commit()
