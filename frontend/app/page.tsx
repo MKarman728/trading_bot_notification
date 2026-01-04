@@ -1,15 +1,10 @@
+import SignInButton from "./components/SignInButton";
+
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <h1 className="text-2xl mb-3">Login To Trading Bot</h1>
-      {/* Adding a login authentication */}
-      <form className="flex flex-col" action="send">
-        <p>Login Email</p>
-        <input type="email" id="user_email" className="border border-white-300 outline-none rounded-md border-white" />
-        <p>Password</p>
-        <input type="password" id="user_password" className="border border-white-300 outline-none rounded-md border-white" />
-      </form>
-
-    </div>
-  );
+    <main className="flex flex-col justify-center items-center min-h-screen gap-4">
+      <h1 className="text-3xl">Trading Analysis on S&P 500</h1>
+      <SignInButton />
+    </main>
+  )
 }
