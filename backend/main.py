@@ -89,7 +89,7 @@ class TradingDatabase:
             print("No new signals to insert (all duplicates)")
         conn.close()
 
-    def day_signal(self, signal_date=None):
+    def get_day_signal(self, signal_date=None):
         if signal_date is None:
             signal_date = date.today().isoformat()
         else:
@@ -109,6 +109,26 @@ class TradingDatabase:
         conn.close()
         return date_signal
 
+    def add_users(self, email, name, image, provider, provider_id):
+        conn = sqlite3.connect(self.db_path)
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                        INSERT INTO users(email, name, image, provider, provider_id)
+                        VALUES (?,?,?,?,?)
+                       """,
+                (email, name, image, provider, provider_id),
+            )
+            conn.commit()
+            print(
+                f"Inserted user email {email}, name: {name} with provider: {provider} into database"
+            )
+        except:
+            print(f"User {email} with provider {provider} already exists")
+        finally:
+            conn.close()
+
 
 # Collects all of the S&P 500 stocks and determines what's a good buy and sell
 @app.get("/bollinger_bands")
@@ -117,7 +137,7 @@ def main():
     trade_db = TradingDatabase()
 
     # Check if data has already been run today
-    todays_signals = trade_db.day_signal()
+    todays_signals = trade_db.get_day_signal()
     if todays_signals:
         print(f"Found {len(todays_signals)} existing signals for today")
         signals_df = pd.DataFrame(
