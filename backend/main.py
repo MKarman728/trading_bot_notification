@@ -29,8 +29,9 @@ class TradingDatabase:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        # Create Tables with cursor
-        cursor.execute("""
+        # Create signals table
+        cursor.execute(
+            """
                        CREATE TABLE IF NOT EXISTS signals (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -40,7 +41,22 @@ class TradingDatabase:
                         signal_date DATETIME DEFAULT (date('now')),
                         strategy VARCHAR(50)
                        )
-                       """)
+                       """
+        )
+        # Create users table
+        cursor.execute(
+            """ CREATE TABLE IF NOT EXISTS users (
+                       id INTEGER PRIMARY KEY AUTOINCREMENT,
+                       timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                       email VARCHAR(255) UNIQUE NOT NULL,
+                       name VARCHAR(255),
+                       image VARCHAR(500),
+                       provider VARCHAR(255),
+                       provider_id VARCHAR(255),
+                       UNIQUE(provider, provider_id)
+                       )
+                        """
+        )
         conn.commit()
         conn.close()
 
@@ -49,10 +65,12 @@ class TradingDatabase:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
                        SELECT symbol, date(signal_date) as signal_date
                        FROM signals
-                       """)
+                       """
+        )
         existing = set((row[0], row[1]) for row in cursor.fetchall())
         new_signals = []
         for _, row in signals_df.iterrows():
@@ -79,33 +97,36 @@ class TradingDatabase:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
                         SELECT symbol, security, signal, signal_date
                         FROM signals
                         WHERE signal_date = ? 
                        """,
-                        (signal_date,)
-                       )
+            (signal_date,),
+        )
         date_signal = cursor.fetchall()
         conn.close()
-        return date_signal 
+        return date_signal
 
 
 # Collects all of the S&P 500 stocks and determines what's a good buy and sell
 @app.get("/bollinger_bands")
 def main():
-    #Instantiate the database
+    # Instantiate the database
     trade_db = TradingDatabase()
-    
-    #Check if data has already been run today
+
+    # Check if data has already been run today
     todays_signals = trade_db.day_signal()
     if todays_signals:
         print(f"Found {len(todays_signals)} existing signals for today")
-        signals_df = pd.DataFrame(todays_signals, columns = ['symbol', 'security', 'signal', 'signal_date'])
+        signals_df = pd.DataFrame(
+            todays_signals, columns=["symbol", "security", "signal", "signal_date"]
+        )
         return signals_df
     print("No signals found for today. Running analysis")
 
-    #SP500 list
+    # SP500 list
     url = "http://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
     html = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}).text
     tables = pd.read_html(StringIO(html), attrs={"id": "constituents"})

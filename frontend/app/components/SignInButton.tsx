@@ -13,5 +13,6 @@ export default function SignInButton() {
       </>
     )
   }
-  return <button onClick={() => signIn('google')}>Sign in with Google</button>
+  return <button className="px-6 py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+    onClick={() => signIn('google')}>Sign in with Google</button>
 }
