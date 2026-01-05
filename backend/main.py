@@ -5,14 +5,32 @@ import yfinance as yf
 import pandas as pd
 from indicators import bollinger_bands
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from database import TradingDatabase
+from models import User
 
 # load dotenv files
 load_dotenv()
 
 # Sets up FastAPI end points
 app = FastAPI()
+
+
+@app.post("/users")
+def create_user(user: User):
+    """Add a new user to database"""
+    trade_db = TradingDatabase()
+    try:
+        trade_db.add_users(
+            email=user.email,
+            name=user.name,
+            image=user.image,
+            provider=user.provider,
+            provider_id=user.provider_id,
+        )
+        return {"success": True, "message": f"User {user.email} added successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 # Collects all of the S&P 500 stocks and determines what's a good buy and sell
