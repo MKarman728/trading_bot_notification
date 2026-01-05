@@ -1,0 +1,116 @@
+import sqlite3
+import pandas as pd
+from datetime import date
+
+
+class TradingDatabase:
+    def __init__(self, db_path="trades.db"):
+        self.db_path = db_path
+        self.init_database()
+
+    def init_database(self):
+        """Initializes database for trading signals if not already initialized"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        # Create signals table
+        cursor.execute(
+            """
+                    CREATE TABLE IF NOT EXISTS signals (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        symbol VARCHAR(10) NOT NULL,
+                        security VARCHAR(255),
+                        signal VARCHAR(20) NOT NULL,
+                        signal_date DATETIME DEFAULT (date('now')),
+                        strategy VARCHAR(50)
+                    )
+                    """
+        )
+        # Create users table
+        cursor.execute(
+            """ CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    email VARCHAR(255) UNIQUE NOT NULL,
+                    name VARCHAR(255),
+                    image VARCHAR(500),
+                    provider VARCHAR(255),
+                    provider_id VARCHAR(255),
+                    UNIQUE(provider, provider_id)
+                    )
+                        """
+        )
+        conn.commit()
+        conn.close()
+
+    def save_signals(self, signals_df):
+        """Saves signals to trading database"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+                    SELECT symbol, date(signal_date) as signal_date
+                    FROM signals
+                    """
+        )
+        existing = set((row[0], row[1]) for row in cursor.fetchall())
+        new_signals = []
+        for _, row in signals_df.iterrows():
+            signal_date = pd.to_datetime(row["signal_date"]).strftime("%Y-%m-%d")
+            if (row["symbol"], signal_date) not in existing:
+                new_signals.append(row)
+
+        # Bulk insert all new signals into database
+        if new_signals:
+            new_df = pd.DataFrame(new_signals)
+            new_df.to_sql("signals", conn, if_exists="append", index=False)
+            print(
+                f"Inserted {len(new_signals)} new signals, skipped {len(signals_df) - len(new_signals)} duplicates"
+            )
+        else:
+            print("No new signals to insert (all duplicates)")
+        conn.close()
+
+    def get_day_signal(self, signal_date=None):
+        if signal_date is None:
+            signal_date = date.today().isoformat()
+        else:
+            signal_date = pd.to_datetime(signal_date).strftime("%Y-%m-%d")
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+                        SELECT symbol, security, signal, signal_date
+                        FROM signals
+                        WHERE signal_date = ? 
+                    """,
+            (signal_date,),
+        )
+        date_signal = cursor.fetchall()
+        conn.close()
+        return date_signal
+
+    def add_users(self, email, name, image, provider, provider_id):
+        conn = sqlite3.connect(self.db_path)
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                        INSERT INTO users(email, name, image, provider, provider_id)
+                        VALUES (?,?,?,?,?)
+                    """,
+                (email, name, image, provider, provider_id),
+            )
+            conn.commit()
+            print(
+                f"Inserted user email {email}, name: {name} with provider: {provider} into database"
+            )
+            return True
+        except:
+            print(f"User {email} with provider {provider} already exists")
+            return False
+        finally:
+            conn.close()
