@@ -1,9 +1,37 @@
 'use client'
 
 import { signIn, signOut, useSession } from 'next-auth/react'
+import { useEffect } from 'react'
 
 export default function SignInButton() {
   const { data: session } = useSession()
+
+  useEffect(() => {
+    const createUser = async () => {
+      if (session?.user) {
+        try {
+          const response = await fetch('http://localhost:8000/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: session.user.email,
+              name: session.user.name,
+              image: session.user.image,
+              provider: 'google',
+              provider_id: session.user.email,
+            })
+          })
+
+          if (response.ok) {
+            console.log("User added to database");
+          }
+        } catch (e) {
+          console.error("Error adding user: ", e);
+        }
+      }
+    }
+    createUser();
+  }, [session])
 
   if (session) {
     return (
