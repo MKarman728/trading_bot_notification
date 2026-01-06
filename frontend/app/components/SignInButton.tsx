@@ -37,7 +37,7 @@ export default function SignInButton() {
     return (
       <>
         <p>Signed in as {session.user?.email}</p>
-        <button onClick={() => signOut()}>Sign Out</button>
+        <button className="px-6 py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700" onClick={() => signOut()}>Sign Out</button>
       </>
     )
   }
