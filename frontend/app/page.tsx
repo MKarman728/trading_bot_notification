@@ -1,10 +1,27 @@
 'use client'
 import SignInButton from "./components/SignInButton";
 import { useSession } from 'next-auth/react'
+import { useEffect } from 'react';
 
 export default function Home() {
   const { data: session, status } = useSession()
-
+useEffect(()=>{
+const bollinger = async () =>{
+      try {
+      const res = await fetch('http://localhost:8000/',{
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'},
+      })
+      if(res.ok){
+        const data = await res.json();
+        console.log(data);
+      }
+      } catch(e){
+        console.error("Error fetching bollinger data: ", e);
+      }
+    }
+    bollinger();
+  },[])
   if (status == 'loading') {
     return <div>Loading...</div>
   }
@@ -15,7 +32,7 @@ export default function Home() {
         <SignInButton />
       </main>
     )
-  } arguments
+  } 
 
   return (
     < main className="p-8" >
