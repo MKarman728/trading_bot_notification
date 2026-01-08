@@ -58,6 +58,7 @@ def main():
         signals_df = pd.DataFrame(
             todays_signals, columns=["symbol", "security", "signal", "signal_date"]
         )
+        signals_df = signals_df.to_dict(orient="records")
         return signals_df
     print("No signals found for today. Running analysis")
 
@@ -78,7 +79,7 @@ def main():
             else:
                 signal = bollinger_bands(data)
         except Exception as e:
-            print(f"Error on {stock['Symbol']}:{e}")
+            print(f"Error on {stock['symbol']}:{e}")
             signal = "Error"
         stocks.loc[index, "signal"] = signal
         stocks.loc[index, "signal_date"] = datetime.now().strftime("%Y-%m-%d")
@@ -86,7 +87,8 @@ def main():
         (stocks["signal"] == "Buy") | (stocks["signal"] == "Sell")
     ]
     trade_db.save_signals(buy_sell_signals)
-    return buy_sell_signals
+
+    return buy_sell_signals.to_dict(orient="records")
 
 
 if __name__ == "__main__":
