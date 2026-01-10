@@ -21,6 +21,7 @@ export default function Home() {
       return;
     }
     const fetchBollingerData = async () => {
+      // fetching bollinger data to handle on frontend.
       setLoading(true);
       try {
         const res = await fetch('http://localhost:8000/bollinger_bands', {
