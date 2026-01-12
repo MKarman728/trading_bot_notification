@@ -24,7 +24,7 @@ export default function Home() {
       // fetching bollinger data to handle on frontend.
       setLoading(true);
       try {
-        const res = await fetch('http://localhost:8000/bollinger_bands', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bollinger_bands`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
         })
