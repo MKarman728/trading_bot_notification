@@ -70,28 +70,29 @@ export default function Home() {
 
         {bollingerData && bollingerData.length > 0 && (
           <div className="mt-4 w-full overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300">
-              <thead className="bg-gray-100">
+            <table className="min-w-full bg-white border dark:bg-gray-800 border-gray-300 dark:border-gray-700">
+              <thead className="bg-gray-100 dark:bg-gray-700">
                 <tr>
-                  <th className="px-4 py-2 border">Symbol</th>
-                  <th className="px-4 py-2 border">Security</th>
-                  <th className="px-4 py-2 border">Signal</th>
-                  <th className="px-4 py-2 border">Date</th>
+                  <th className="px-4 py-2 border dark:border-gray-600 dark:text-white">Symbol</th>
+                  <th className="px-4 py-2 border dark:border-gray-600 dark:text-white">Security</th>
+                  <th className="px-4 py-2 border dark:border-gray-600 dark:text-white">Signal</th>
+                  <th className="px-4 py-2 border dark:border-gray-600 dark:text-white">Date</th>
                 </tr>
               </thead>
               <tbody>
                 {bollingerData.map((row, idx) => (
                   <tr
                     key={idx}
-                    className={row.signal === 'Buy' ? 'bg-green-50' : 'bg-red-50'}
+                    className={row.signal === 'Buy' ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-green-900/20'}
                   >
-                    <td className="px-4 py-2 border font-mono">{row.symbol}</td>
-                    <td className="px-4 py-2 border">{row.security}</td>
-                    <td className={`px-4 py-2 border font-semibold ${row.signal === 'Buy' ? 'text-green-600' : 'text-red-600'
+                    <td className="px-4 py-2 border dark:border-gray-600 dark:text-white font-mono">{row.symbol}</td>
+                    <td className="px-4 py-2 border dark:border-gray-600 dark:text-white font-mono">{row.security}</td>
+                    <td className={`px-4 py-2 border dark:border-gray-600 font-semibold ${row.signal === 'Buy' ?
+                      'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                       }`}>
                       {row.signal}
                     </td>
-                    <td className="px-4 py-2 border">{row.signal_date}</td>
+                    <td className="px-4 py-2 border dark:border-gray-600 dark:text-white">{row.signal_date}</td>
                   </tr>
                 ))}
               </tbody>
